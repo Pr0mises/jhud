@@ -180,14 +180,9 @@ void JhudMenu(int client)
 	
 	FormatEx(sBuffer, sizeof(sBuffer), "Gain Colour - [%s]", (g_bGainColour[client]) ? "x" : " ");
 	panel.DrawItem(sBuffer);
-	// BRO WHAT THE FUCK
-	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);  //to get exit to 0 cuz panel stuff...
-	
-	//resize menu with " "
-	panel.DrawItem("Exit                          ", ITEMDRAW_CONTROL);
+
+	panel.CurrentKey = 10;
+	panel.DrawItem("Exit                 ", ITEMDRAW_CONTROL);
 	
 	panel.Send(client, menu_Jhud, 0);
 	
