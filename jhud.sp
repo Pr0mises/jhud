@@ -131,9 +131,13 @@ public Action SM_JHUD(int client, int args)
 		ReplyToCommand(client, "[SM] This command can only used ingame");
 		return Plugin_Handled;
 	}
-	else
+	else if(IsValidClient(client))
 	{
 		JhudMenu(client);
+	}
+	else
+	{
+		return;
 	}
 	return Plugin_Handled;
 }
@@ -266,7 +270,7 @@ public int menu_Jhud(Handle menu, MenuAction action, int client, int item)
 
 public Action onTouch(int client, int entity)
 {
-	if(!(GetEntProp(entity, Prop_Data, "m_usSolidFlags") & 12))	
+	if(!(GetEntProp(entity, Prop_Data, "m_usSolidFlags") & 28))
 		g_bTouchesWall[client] = true;
 }
 
@@ -539,4 +543,9 @@ stock void SetCookie(int client, Handle hCookie, int n)
 	IntToString(n, strCookie, sizeof(strCookie));
 
 	SetClientCookie(client, hCookie, strCookie);
+}
+
+stock bool IsValidClient(int client, bool bAlive = false)
+{
+	return (client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client) && (!bAlive || IsPlayerAlive(client)));
 }
