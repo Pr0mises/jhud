@@ -280,7 +280,7 @@ public Action OnPlayerJump(Handle event, const char[] name, bool dontBroadcast)
 	int userid = GetEventInt(event, "userid");
 	int client = GetClientOfUserId(userid);
 	
-	if (IsFakeClient(client))
+	if (!IsValidClientIndex(client) || IsFakeClient(client))
 		return;
 	
 	if (g_iJump[client] && g_strafeTick[client] <= 0)
