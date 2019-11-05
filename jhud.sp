@@ -180,7 +180,7 @@ void JhudMenu(int client)
 	
 	FormatEx(sBuffer, sizeof(sBuffer), "Gain Colour - [%s]", (g_bGainColour[client]) ? "x" : " ");
 	panel.DrawItem(sBuffer);
-	
+	// BRO WHAT THE FUCK
 	panel.DrawItem("", ITEMDRAW_SPACER);
 	panel.DrawItem("", ITEMDRAW_SPACER);
 	panel.DrawItem("", ITEMDRAW_SPACER);
@@ -266,7 +266,17 @@ public int menu_Jhud(Handle menu, MenuAction action, int client, int item)
 
 public Action onTouch(int client, int entity)
 {
-	if(!(GetEntProp(entity, Prop_Data, "m_usSolidFlags") & 12))	
+	/* https://github.com/ValveSoftware/source-sdk-2013/blob/master/sp/src/public/engine/ICollideable.h
+		SOLID_NONE = 0, // no solid model
+		SOLID_BSP = 1, // a BSP tree
+		SOLID_BBOX = 2, // an AABB
+		SOLID_OBB = 3, // an OBB (not implemented yet)
+		SOLID_OBB_YAW = 4, // an OBB, constrained so that it can only yaw
+		SOLID_CUSTOM = 5, // Always call into the entity for tests
+		SOLID_VPHYSICS = 6, // solid vphysics object, get vcollide from the model and collide with that
+	*/
+	
+	if(!(GetEntProp(entity, Prop_Data, "m_usSolidFlags") & 28))	
 		g_bTouchesWall[client] = true;
 }
 
@@ -539,4 +549,10 @@ stock void SetCookie(int client, Handle hCookie, int n)
 	IntToString(n, strCookie, sizeof(strCookie));
 
 	SetClientCookie(client, hCookie, strCookie);
+}
+
+// We don't want the -1 client id bug. Thank Volvo™ for this
+stock bool IsValidClientIndex(int client)
+{
+    return (0 < client <= MaxClients);
 }
