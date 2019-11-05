@@ -131,13 +131,9 @@ public Action SM_JHUD(int client, int args)
 		ReplyToCommand(client, "[SM] This command can only used ingame");
 		return Plugin_Handled;
 	}
-	else if(IsValidClient(client))
-	{
-		JhudMenu(client);
-	}
 	else
 	{
-		return;
+		JhudMenu(client);
 	}
 	return Plugin_Handled;
 }
@@ -184,14 +180,9 @@ void JhudMenu(int client)
 	
 	FormatEx(sBuffer, sizeof(sBuffer), "Gain Colour - [%s]", (g_bGainColour[client]) ? "x" : " ");
 	panel.DrawItem(sBuffer);
-	
-	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);  //to get exit to 0 cuz panel stuff...
-	
-	//resize menu with " "
-	panel.DrawItem("Exit                          ", ITEMDRAW_CONTROL);
+
+	panel.CurrentKey = 10;
+	panel.DrawItem("Exit                 ", ITEMDRAW_CONTROL);
 	
 	panel.Send(client, menu_Jhud, 0);
 	
@@ -270,7 +261,17 @@ public int menu_Jhud(Handle menu, MenuAction action, int client, int item)
 
 public Action onTouch(int client, int entity)
 {
-	if(!(GetEntProp(entity, Prop_Data, "m_usSolidFlags") & 28))
+	/* https://github.com/ValveSoftware/source-sdk-2013/blob/master/sp/src/public/engine/ICollideable.h
+		SOLID_NONE = 0, // no solid model
+		SOLID_BSP = 1, // a BSP tree
+		SOLID_BBOX = 2, // an AABB
+		SOLID_OBB = 3, // an OBB (not implemented yet)
+		SOLID_OBB_YAW = 4, // an OBB, constrained so that it can only yaw
+		SOLID_CUSTOM = 5, // Always call into the entity for tests
+		SOLID_VPHYSICS = 6, // solid vphysics object, get vcollide from the model and collide with that
+	*/
+	
+	if(!(GetEntProp(entity, Prop_Data, "m_usSolidFlags") & 28))	
 		g_bTouchesWall[client] = true;
 }
 
@@ -279,7 +280,7 @@ public Action OnPlayerJump(Handle event, const char[] name, bool dontBroadcast)
 	int userid = GetEventInt(event, "userid");
 	int client = GetClientOfUserId(userid);
 	
-	if (IsFakeClient(client))
+	if (!IsValidClientIndex(client) || IsFakeClient(client))
 		return;
 	
 	if (g_iJump[client] && g_strafeTick[client] <= 0)
@@ -545,7 +546,8 @@ stock void SetCookie(int client, Handle hCookie, int n)
 	SetClientCookie(client, hCookie, strCookie);
 }
 
-stock bool IsValidClient(int client, bool bAlive = false)
+// We don't want the -1 client id bug. Thank Volvo™ for this
+stock bool IsValidClientIndex(int client)
 {
-	return (client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client) && (!bAlive || IsPlayerAlive(client)));
+    return (0 < client <= MaxClients);
 }
