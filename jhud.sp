@@ -131,14 +131,11 @@ public Action SM_JHUD(int client, int args)
 		ReplyToCommand(client, "[SM] This command can only used ingame");
 		return Plugin_Handled;
 	}
-	else if(IsValidClient(client))
+	else
 	{
 		JhudMenu(client);
 	}
-	else
-	{
-		return;
-	}
+
 	return Plugin_Handled;
 }
 
