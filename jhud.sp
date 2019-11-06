@@ -156,15 +156,15 @@ void JhudMenu(int client)
 	//Display Mode preview
 	if(g_iDisplayMode[client] == 0)
 	{
-		FormatEx(sBuffer, sizeof(sBuffer), "----------------------------\n    jump: ssj\n----------------------------");
+		FormatEx(sBuffer, sizeof(sBuffer), "jump: ssj");
 	}
 	else if (g_iDisplayMode[client] == 1)
 	{
-		FormatEx(sBuffer, sizeof(sBuffer), "----------------------------\n    jump: gain %\n----------------------------");
+		FormatEx(sBuffer, sizeof(sBuffer), "jump: gain %");
 	}
 	else if (g_iDisplayMode[client] == 2)
 	{
-		FormatEx(sBuffer, sizeof(sBuffer), "----------------------------\n    jump: ssj - gain %\n----------------------------");
+		FormatEx(sBuffer, sizeof(sBuffer), "jump: ssj - gain %");
 	}
 	panel.DrawText(sBuffer);
 	
