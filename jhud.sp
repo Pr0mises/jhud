@@ -1,7 +1,5 @@
 #pragma semicolon 1
 
-#define DEBUG
-
 #define PLUGIN_AUTHOR "Promises"
 #define PLUGIN_VERSION "1.0"
 
@@ -137,7 +135,7 @@ public Action SM_JHUD(int client, int args)
 	}
 	else
 	{
-		return;
+		return Plugin_Handled;
 	}
 	return Plugin_Handled;
 }
@@ -186,10 +184,8 @@ void JhudMenu(int client)
 	panel.DrawItem(sBuffer);
 	
 	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);
-	panel.DrawItem("", ITEMDRAW_SPACER);  //to get exit to 0 cuz panel stuff...
 	
+	panel.CurrentKey = 10;
 	//resize menu with " "
 	panel.DrawItem("Exit                          ", ITEMDRAW_CONTROL);
 	
@@ -400,7 +396,7 @@ void JHUD_Print(int client, int target)
 		}
 		else
 		{
-			Format(JHUDText, sizeof(JHUDText), "%.0f%", coeffsum);
+			FormatEx(JHUDText, sizeof(JHUDText), "%.0f%", coeffsum);
 		}
 	}
 			//jump# - gain %
@@ -412,7 +408,7 @@ void JHUD_Print(int client, int target)
 		}
 		else
 		{
-			Format(JHUDText, sizeof(JHUDText), "%i: %.0f%", g_iJump[target], coeffsum);
+			FormatEx(JHUDText, sizeof(JHUDText), "%i: %.0f%", g_iJump[target], coeffsum);
 		}
 	}
 			//jump # - ssj - gain % 
