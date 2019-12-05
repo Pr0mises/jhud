@@ -103,7 +103,8 @@ public void OnClientCookiesCached(int client)
 	g_bSpeedColour[client] = GetCookie(client, g_hCookieSpeed);
 	g_bGainColour[client] = GetCookie(client, g_hCookieGain);
 	g_bDefaultColour[client] = GetCookie(client, g_hCookieDefaultColour);
-	g_iDisplayMode[client] = GetCookie(client, g_hCookieDisplayMode);
+	GetClientCookie(client, g_hCookieDisplayMode, sCookie, sizeof(sCookie));
+	g_iDisplayMode[client] = StringToInt(sCookie);
 }
 
 public void OnClientPutInServer(int client)
