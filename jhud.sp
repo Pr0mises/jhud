@@ -1,21 +1,17 @@
-#pragma semicolon 1
-
-#define DEBUG
-
-#define PLUGIN_AUTHOR "Promises"
-#define PLUGIN_VERSION "1.0"
-
 #include <sourcemod>
 #include <sdktools>
 #include <cstrike>
 #include <sdkhooks>
 #include <clientprefs>
 
+#pragma semicolon 1
 #pragma newdecls required
 
-EngineVersion g_Game;
-
+#define PLUGIN_AUTHOR "⌐■_■ fuck knows, code was stolen from 5 ppl and all of them claim the ownership. Fixed by Nairda tho."
+#define PLUGIN_VERSION "1.11"
 #define BHOP_TIME 15
+
+EngineVersion g_Game;
 
 Handle g_hCookieEnabled;
 Handle g_hCookieSpeed;
@@ -26,15 +22,12 @@ Handle g_hCookieDefaultColour;
 Handle hText;
 
 int g_iJump[MAXPLAYERS +1];
-int g_iTicksOnGround[MAXPLAYERS +1];
 int g_strafeTick[MAXPLAYERS +1];
-
-
 int g_iDisplayMode[MAXPLAYERS + 1];
+int g_iTicksOnGround[MAXPLAYERS + 1]; // Let's count the ticks for scroll
 
 bool g_bEnabled[MAXPLAYERS +1];
 bool g_bTouchesWall[MAXPLAYERS +1];
-
 bool g_bSpeedColour[MAXPLAYERS + 1] = false;
 bool g_bGainColour[MAXPLAYERS + 1] = false;
 bool g_bDefaultColour[MAXPLAYERS + 1] = true;
@@ -44,8 +37,8 @@ float g_flRawGain[MAXPLAYERS +1];
 public Plugin myinfo = 
 {
 	name = "Jhud",
-	author = PLUGIN_AUTHOR,
 	description = "SSJ in Hud",
+	author = PLUGIN_AUTHOR,
 	version = PLUGIN_VERSION,
 	url = "https://steamcommunity.com/profiles/76561198075677363/"
 };
@@ -73,7 +66,7 @@ public void OnPluginStart()
 	g_hCookieDefault = RegClientCookie("jhud_default", "jhud_default", CookieAccess_Public);
 	g_hCookieDefaultColour = RegClientCookie("colour_default", "colour_default", CookieAccess_Public);
 	
-	for(int i = 1; i < MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(IsClientInGame(i))
 		{
@@ -105,7 +98,8 @@ public void OnClientCookiesCached(int client)
 	g_bSpeedColour[client] = GetCookie(client, g_hCookieSpeed);
 	g_bGainColour[client] = GetCookie(client, g_hCookieGain);
 	g_bDefaultColour[client] = GetCookie(client, g_hCookieDefaultColour);
-	g_iDisplayMode[client] = GetCookie(client, g_hCookieDisplayMode);
+	GetClientCookie(client, g_hCookieDisplayMode, sCookie, sizeof(sCookie));
+	g_iDisplayMode[client] = StringToInt(sCookie);
 }
 
 public void OnClientPutInServer(int client)
@@ -176,7 +170,7 @@ void JhudMenu(int client)
 	FormatEx(sBuffer, sizeof(sBuffer), "Default Colour - [%s]", (g_bDefaultColour[client]) ? "x" : " ");
 	panel.DrawItem(sBuffer);
 	
-	FormatEx(sBuffer, sizeof(sBuffer), "Velo Colour - [%s]", (g_bSpeedColour[client]) ? "x" : " ");
+	FormatEx(sBuffer, sizeof(sBuffer), "Velocity Colour - [%s]", (g_bSpeedColour[client]) ? "x" : " ");
 	panel.DrawItem(sBuffer);
 	
 	FormatEx(sBuffer, sizeof(sBuffer), "Gain Colour - [%s]", (g_bGainColour[client]) ? "x" : " ");
@@ -291,14 +285,9 @@ public Action OnPlayerJump(Handle event, const char[] name, bool dontBroadcast)
 	
 	g_iJump[client]++;
 	
-	for (int i = 1; i < MaxClients; i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
-		/* 	
-		Removed this, because of the check above - IsValidClientIndex
-		
-		if(IsClientInGame(i) && !IsFakeClient(i) && ((!IsPlayerAlive(i) && GetEntPropEnt(i, Prop_Data, "m_hObserverTarget") == client && GetEntProp(i, Prop_Data, "m_iObserverMode") != 7 && g_bEnabled[i]) || (i == client && g_bEnabled[i] ))) 
-		*/
-		if((!IsPlayerAlive(i) && GetEntPropEnt(i, Prop_Data, "m_hObserverTarget") == client && GetEntProp(i, Prop_Data, "m_iObserverMode") != 7 && g_bEnabled[i]) || (i == client && g_bEnabled[i] ))
+		if(IsClientInGame(i) && !IsFakeClient(i) && ((!IsPlayerAlive(i) && GetEntPropEnt(i, Prop_Data, "m_hObserverTarget") == client && GetEntProp(i, Prop_Data, "m_iObserverMode") != 7 && g_bEnabled[i]) || (i == client && g_bEnabled[i])))
 		{
 			JHUD_Print(i, client);
 		}
@@ -365,7 +354,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			g_flRawGain[client] = 0.0;
 		}
 		g_iTicksOnGround[client]++;
-		if(buttons & IN_JUMP && g_iTicksOnGround[client] == 1)
+		if(buttons & IN_JUMP && (g_iTicksOnGround[client] <= 15))
 		{
 			JHUD_Get(client, vel, angles);
 			g_iTicksOnGround[client] = 0;
@@ -403,7 +392,7 @@ void JHUD_Print(int client, int target)
 			//jump # - speed
 	if(g_iDisplayMode[client] == 0)
 	{
-		if((g_iJump[target] <= 6 ) || g_iJump[target] == 16 )
+		if((g_iJump[target] <= 6) || g_iJump[target] == 16)
 		{
 			FormatEx(JHUDText, sizeof(JHUDText), "%i: %i", g_iJump[target], RoundToFloor(GetVectorLength(velocity)));
 		}
@@ -415,7 +404,7 @@ void JHUD_Print(int client, int target)
 			//jump# - gain %
 	else if(g_iDisplayMode[client] == 1)
 	{
-		if((g_iJump[target] == 1 ) || g_iJump[target] == 16 )
+		if((g_iJump[target] == 1) || g_iJump[target] == 16)
 		{
 			FormatEx(JHUDText, sizeof(JHUDText), "%i: %i", g_iJump[target], RoundToFloor(GetVectorLength(velocity)));
 		}
@@ -427,7 +416,7 @@ void JHUD_Print(int client, int target)
 			//jump # - ssj - gain % 
 	else if(g_iDisplayMode[client] == 2)
 	{
-		if(g_iJump[target] == 1 )
+		if(g_iJump[target] == 1)
 		{
 			FormatEx(JHUDText, sizeof(JHUDText), "%i: %i", g_iJump[target], RoundToFloor(GetVectorLength(velocity)));
 		}
@@ -523,7 +512,7 @@ void GetSpeedColour(int jump, int speed, int &r, int &g, int &b)
 		g = 255; //green
 		b = 0;
 	}
-	else if ((jump == 1 && speed >= 287) || (jump == 2 && speed >= 375 ) || (jump == 3 && speed >= 450) || (jump == 4 && speed >= 515) || (jump == 5 && speed >= 570) || (jump == 6 && speed >= 620) || (jump == 16 && speed >= 1000))
+	else if ((jump == 1 && speed >= 287) || (jump == 2 && speed >= 375) || (jump == 3 && speed >= 450) || (jump == 4 && speed >= 515) || (jump == 5 && speed >= 570) || (jump == 6 && speed >= 620) || (jump == 16 && speed >= 1000))
 	{
 		r = 0;
 		g = 255; //blue
