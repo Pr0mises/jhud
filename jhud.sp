@@ -418,11 +418,11 @@ void JHUD_Print(int client, int target)
 	{
 		if(g_iJump[target] == 1)
 		{
-			FormatEx(JHUDText, sizeof(JHUDText), "%i: %i", g_iJump[target], RoundToFloor(GetVectorLength(velocity)));
+			FormatEx(JHUDText, sizeof(JHUDText), "Jump %i | PreSpeed %i", g_iJump[target], RoundToFloor(GetVectorLength(velocity)));
 		}
 		else
 		{
-			FormatEx(JHUDText, sizeof(JHUDText), "%i: %i - %0.f%", g_iJump[target], RoundToFloor(GetVectorLength(velocity)), coeffsum);
+			FormatEx(JHUDText, sizeof(JHUDText), "Jump %i | Gain\n%i | %0.f%", g_iJump[target], RoundToFloor(GetVectorLength(velocity)), coeffsum);
 		}
 	}
 	
