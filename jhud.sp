@@ -40,7 +40,6 @@ public Plugin myinfo =
 	description = "SSJ in Hud",
 	author = PLUGIN_AUTHOR,
 	version = PLUGIN_VERSION,
-	url = "https://steamcommunity.com/profiles/76561198075677363/"
 };
 
 public void OnAllPluginsLoaded()
