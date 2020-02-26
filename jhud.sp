@@ -3,6 +3,7 @@
 #include <cstrike>
 #include <sdkhooks>
 #include <clientprefs>
+#include <shavit>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -40,6 +41,7 @@ public Plugin myinfo =
 	description = "SSJ in Hud",
 	author = PLUGIN_AUTHOR,
 	version = PLUGIN_VERSION,
+	url = "https://steamcommunity.com/profiles/76561198075677363/"
 };
 
 public void OnAllPluginsLoaded()
@@ -103,7 +105,7 @@ public void OnClientCookiesCached(int client)
 
 public void OnClientPutInServer(int client)
 {
-	g_iJump[client] = 0;
+	g_iJump[client] = Shavit_GetClientJumps(client); 
 	g_strafeTick[client] = 0;
 	g_flRawGain[client] = 0.0;
 	g_iTicksOnGround[client] = 0;
