@@ -284,6 +284,8 @@ public Action OnPlayerJump(Handle event, const char[] name, bool dontBroadcast)
 	if (g_iJump[client] && g_strafeTick[client] <= 0)
 		return;
 	
+	g_iJump[client] = Shavit_GetClientJumps(client); 
+	
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if(IsClientInGame(i) && !IsFakeClient(i) && ((!IsPlayerAlive(i) && GetEntPropEnt(i, Prop_Data, "m_hObserverTarget") == client && GetEntProp(i, Prop_Data, "m_iObserverMode") != 7 && g_bEnabled[i]) || (i == client && g_bEnabled[i])))
